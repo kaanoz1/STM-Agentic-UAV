@@ -1,0 +1,8 @@
+webots $WEBOTS_HOME/projects/robots/gctronic/e-puck/worlds/e-puck.wbt
+
+Commands for lightweight simulation.
+
+
+glxinfo | grep OpenGL
+
+For check the graphical card integration.

@@ -81,7 +81,8 @@ RUN apt update && apt install -y --no-install-recommends \
     procps \
     vim \
     nano \
-    dos2unix
+    dos2unix \
+	mesa-utils
 
 # noVNC entry page
 RUN ln -sf /usr/share/novnc/vnc.html /usr/share/novnc/index.html
@@ -91,6 +92,30 @@ RUN adduser xrdp ssl-cert || true
 
 ENV DISPLAY=:1
 EXPOSE 5901 6080 3389
+
+# Webots R2025a (pinned .deb release)
+# apt is used rather than dpkg -i so the dependency tree resolves automatically.
+ARG WEBOTS_VERSION=R2025a
+ARG WEBOTS_DEB=webots_2025a_amd64.deb
+RUN wget -q --show-progress \
+      "https://github.com/cyberbotics/webots/releases/download/${WEBOTS_VERSION}/${WEBOTS_DEB}" \
+      -O /tmp/${WEBOTS_DEB} && \
+    apt update && \
+    apt install -y --no-install-recommends /tmp/${WEBOTS_DEB} && \
+    rm -f /tmp/${WEBOTS_DEB}
+
+ENV WEBOTS_HOME=/usr/local/webots
+ENV PATH="${WEBOTS_HOME}:${PATH}"
+
+# VirtualGL — redirects GLX calls to the real GPU so OpenGL apps in the VNC
+# session get hardware rendering instead of Mesa's llvmpipe.
+RUN wget -q https://sourceforge.net/projects/virtualgl/files/3.1/virtualgl_3.1_amd64.deb/download \
+      -O /tmp/virtualgl.deb && \
+    apt update && \
+    apt install -y --no-install-recommends /tmp/virtualgl.deb && \
+    rm -f /tmp/virtualgl.deb
+
+ENV PATH="/opt/VirtualGL/bin:${PATH}"
 
 # Copy the RAI repository
 COPY . /rai
@@ -102,6 +127,10 @@ RUN find /rai -maxdepth 2 -name '*.sh' -exec sed -i 's/\r$//' {} +
 # Pull ROS source dependencies (rai_interfaces etc.)
 RUN apt update && apt install -y --no-install-recommends python3-vcstool && \
     vcs import src < ros_deps.repos
+
+# Ros bridge for webots
+RUN apt update && apt install -y --no-install-recommends \
+    ros-${ROS_DISTRO}-webots-ros2
 
 # Install ROS dependencies
 RUN /bin/bash -c '. /opt/ros/${ROS_DISTRO}/setup.bash && \

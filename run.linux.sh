@@ -9,6 +9,10 @@ fi
 
 docker run -it \
   --name rai-desktop \
+  --gpus all \
+  --device /dev/dxg \
+  -v /usr/lib/wsl:/usr/lib/wsl:ro \
+  -e LD_LIBRARY_PATH=/usr/lib/wsl/lib \
   --shm-size 2g \
   -p 127.0.0.1:6080:6080 \
   -p 127.0.0.1:3390:3389 \
