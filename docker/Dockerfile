@@ -12,7 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-ARG ROS_DISTRO=jazzy
+ARG ROS_DISTRO=humble
 FROM osrf/ros:${ROS_DISTRO}-desktop-full
 
 ARG DEPENDENCIES=core_only
@@ -122,7 +122,6 @@ COPY . /rai
 WORKDIR /rai
 
 
-# .devcontainer klasörünü oluşturup devcontainer.json dosyasını yazan komut
 RUN mkdir -p /rai/.devcontainer && echo '{ \
   "name": "RAI Dev Container", \
   "build": { \
@@ -151,6 +150,12 @@ RUN apt update && apt install -y --no-install-recommends python3-vcstool && \
 # Ros bridge for webots
 RUN apt update && apt install -y --no-install-recommends \
     ros-${ROS_DISTRO}-webots-ros2
+
+ENV USER=root
+RUN DRIVER_DIR=/opt/ros/${ROS_DISTRO}/local/lib/python3.10/dist-packages/webots_ros2_driver && \
+    sed -i "s/^    return 'microsoft-standard' in uname().release/    return False  # Docker on WSL2 kernel, native Linux Webots/" \
+      $DRIVER_DIR/utils.py && \
+    rm -rf $DRIVER_DIR/__pycache__
 
 # Install ROS dependencies
 RUN /bin/bash -c '. /opt/ros/${ROS_DISTRO}/setup.bash && \
