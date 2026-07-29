@@ -1,1 +1,3 @@
-ros2 launch webots_ros2_mavic robot_launch.py
+#!/bin/bash
+source /opt/ros/humble/setup.bash
+ros2 launch /rai/rai_workspace/simulation/launch/mavic_lidar.launch.py
