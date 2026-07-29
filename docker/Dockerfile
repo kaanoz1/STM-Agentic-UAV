@@ -121,6 +121,26 @@ ENV PATH="/opt/VirtualGL/bin:${PATH}"
 COPY . /rai
 WORKDIR /rai
 
+
+# .devcontainer klasörünü oluşturup devcontainer.json dosyasını yazan komut
+RUN mkdir -p /rai/.devcontainer && echo '{ \
+  "name": "RAI Dev Container", \
+  "build": { \
+    "dockerfile": "../docker/Dockerfile", \
+    "context": ".." \
+  }, \
+  "workspaceFolder": "/rai", \
+  "customizations": { \
+    "vscode": { \
+      "extensions": [ \
+        "ms-python.python", \
+        "ms-ros.ros" \
+      ] \
+    } \
+  }, \
+  "runArgs": ["--net=host"] \
+}' > /rai/.devcontainer/devcontainer.json
+
 # Defensive: normalize line endings on any script that came from a CRLF checkout
 RUN find /rai -maxdepth 2 -name '*.sh' -exec sed -i 's/\r$//' {} +
 

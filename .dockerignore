@@ -183,3 +183,7 @@ demo_assets/
 
 # Docker files
 Dockerfile*
+
+# Shell scripts
+run.linux.sh
+build.linux.sh
