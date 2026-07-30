@@ -1,10 +1,14 @@
-"""Launch Webots Mavic 2 PRO with lidar, TF tree, pose broadcaster, and RViz."""
+"""Launch Webots Mavic 2 PRO with lidar, TF tree, and RViz.
+
+Replaces the manual `ros2 run tf2_ros static_transform_publisher` steps so the
+whole visualisation stack comes up with one command and survives restarts.
+"""
 
 import os
 
 import launch
 from launch import LaunchDescription
-from launch.actions import DeclareLaunchArgument, ExecuteProcess
+from launch.actions import DeclareLaunchArgument
 from launch.conditions import IfCondition
 from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
@@ -12,6 +16,8 @@ from webots_ros2_driver.webots_controller import WebotsController
 from webots_ros2_driver.webots_launcher import WebotsLauncher
 
 SIM_DIR = '/rai/rai_workspace/simulation'
+
+# Must match the Lidar's `translation` inside bodySlot in mavic_world.wbt.
 LIDAR_Z = '0.05'
 
 
@@ -32,10 +38,15 @@ def generate_launch_description():
         respawn=True,
     )
 
-    pose_broadcaster = ExecuteProcess(
-        cmd=['python3', os.path.join(SIM_DIR, 'pose_broadcaster.py')],
-        output='screen',
-        respawn=True,
+    # Static TF: map -> base_link -> lidar.
+    # NOTE: map -> base_link is a placeholder at the origin. The drone will fly
+    # but RViz keeps drawing it at ground level. Replace with a real broadcaster
+    # driven by /Mavic_2_PRO/gps + /imu when you need correct geometry.
+    map_to_base = Node(
+        package='tf2_ros',
+        executable='static_transform_publisher',
+        name='static_tf_map_to_base',
+        arguments=['--frame-id', 'map', '--child-frame-id', 'base_link'],
     )
 
     base_to_lidar = Node(
@@ -58,11 +69,15 @@ def generate_launch_description():
     )
 
     return LaunchDescription([
-        DeclareLaunchArgument('rviz', default_value='true'),
+        DeclareLaunchArgument(
+            'rviz',
+            default_value='true',
+            description='Start RViz with the saved mavic.rviz config',
+        ),
         webots,
         webots._supervisor,
         driver,
-        pose_broadcaster,
+        map_to_base,
         base_to_lidar,
         rviz,
         launch.actions.RegisterEventHandler(

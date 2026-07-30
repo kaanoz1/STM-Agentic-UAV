@@ -1,5 +1,8 @@
 #VRML_SIM R2023b utf8
 
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/develop/projects/objects/buildings/protos/BigGlassTower.proto"
+EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/develop/projects/humans/pedestrian/protos/Pedestrian.proto"
+
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/develop/projects/objects/backgrounds/protos/TexturedBackground.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/develop/projects/objects/backgrounds/protos/TexturedBackgroundLight.proto"
 EXTERNPROTO "https://raw.githubusercontent.com/cyberbotics/webots/develop/projects/objects/floors/protos/Floor.proto"
@@ -95,6 +98,22 @@ TeslaModel3Simple {
   translation -41.5139 4.34169 0.31
   rotation 0 0 1 -0.2618053071795865
 }
+BigGlassTower {
+  translation 33.7 -24.6 0
+  rotation 0 0 1 0.524
+  name "big glass tower"
+}
+
+Pedestrian {
+  translation 5.69 -4.62 1.27
+  rotation 0 0 1 1.05
+  name "pedestrian"
+  shirtColor 0.25 0.55 0.2
+  pantsColor 0.24 0.25 0.5
+  shoesColor 0.28 0.15 0.06
+  skinColor 1 0.75 0.7
+  enableBoundingObject TRUE
+}
 Pine {
   translation -14.0083 -14.4828 0
   rotation 0 0 1 3.1415853071795863
@@ -168,11 +187,11 @@ Mavic2Pro {
       name "lidar"
       horizontalResolution 360
       fieldOfView 6.28
-      verticalFieldOfView 0.5
-      numberOfLayers 8
+      verticalFieldOfView 0.1
+      numberOfLayers 1
       near 0.1
       minRange 0.15
-      maxRange 30
+      maxRange 100
     }
   ]
 }
