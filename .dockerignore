@@ -185,6 +185,8 @@ demo_assets/
 Dockerfile*
 docker/
 !docker/entrypoint-desktop.sh
+!docker/fonts.conf
+!docker/terminator-config
 # Shell scripts
 run.linux.sh
 build.linux.sh

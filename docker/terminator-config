@@ -1,0 +1,50 @@
+[global_config]
+  borderless = False
+  handle_size = 1
+  inactive_color_offset = 0.85
+  suppress_multiple_term_dialog = True
+  title_hide_sizetext = True
+  title_transmit_fg_color = "#0d0d0d"
+  title_transmit_bg_color = "#d6d6d6"
+  title_inactive_fg_color = "#8a8a8a"
+  title_inactive_bg_color = "#1a1a1a"
+  title_receive_fg_color = "#0d0d0d"
+  title_receive_bg_color = "#a3a3a3"
+  focus = system
+  window_state = normal
+
+[keybindings]
+
+[profiles]
+  [[default]]
+    background_color = "#0d0d0d"
+    background_type = solid
+    foreground_color = "#d6d6d6"
+    cursor_color = "#ffffff"
+    cursor_shape = block
+    cursor_blink = False
+    use_system_font = False
+    font = DejaVu Sans Mono 11
+    allow_bold = True
+    bold_is_bright = True
+    palette = "#1a1a1a:#6e6e6e:#8a8a8a:#a3a3a3:#7d7d7d:#949494:#b0b0b0:#c8c8c8:#3d3d3d:#8f8f8f:#a8a8a8:#c0c0c0:#9c9c9c:#b3b3b3:#cccccc:#ffffff"
+    scrollbar_position = hidden
+    scrollback_infinite = True
+    show_titlebar = False
+    audible_bell = False
+    urgent_bell = False
+    copy_on_selection = True
+    word_chars = "-,./?%&#:_=+@~"
+
+[layouts]
+  [[default]]
+    [[[window0]]]
+      type = Window
+      parent = ""
+      size = 1000, 620
+    [[[child1]]]
+      type = Terminal
+      parent = window0
+      profile = default
+
+[plugins]

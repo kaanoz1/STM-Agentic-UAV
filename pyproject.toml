@@ -53,6 +53,9 @@ rai_sim = { path = "src/rai_sim", editable = true }
 rai_bench = { path = "src/rai_bench", editable = true }
 rai_perception = { path = "src/rai_extensions/rai_perception", editable = true }
 
+[tool.pyright]
+reportMissingTypeStubs = false
+
 
 [tool.pytest.ini_options]
 markers = [

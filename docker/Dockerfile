@@ -82,7 +82,9 @@ RUN apt update && apt install -y --no-install-recommends \
     vim \
     nano \
     dos2unix \
-	mesa-utils
+    mesa-utils \
+    epiphany-browser
+
 
 # noVNC entry page
 RUN ln -sf /usr/share/novnc/vnc.html /usr/share/novnc/index.html
@@ -180,6 +182,16 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 # Auto-source ROS 2 setup and local workspace overlay for all interactive bash sessions
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc && \
     echo "source /rai/install/setup.bash" >> ~/.bashrc
+
+ENV WEBKIT_FORCE_SANDBOX=0
+ENV WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=1
+
+RUN mkdir -p /root/.config/terminator /root/.config/fontconfig
+COPY docker/terminator-config /root/.config/terminator/config
+COPY docker/fonts.conf /root/.config/fontconfig/fonts.conf
+RUN sed -i 's/\r$//' /root/.config/terminator/config \
+                     /root/.config/fontconfig/fonts.conf && \
+    fc-cache -f
 
 COPY docker/entrypoint-desktop.sh /usr/local/bin/entrypoint-desktop.sh
 RUN sed -i 's/\r$//' /usr/local/bin/entrypoint-desktop.sh && \

@@ -16,6 +16,7 @@ docker run -it \
   --shm-size 2g \
   -p 127.0.0.1:6080:6080 \
   -p 127.0.0.1:3390:3389 \
+  -p 127.0.0.1:8501:8501 \
   -e ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}" \
   -e ROS_DISTRO=humble \
   -v "$HOME/projects/rai/volume_data/rai_workspace:/rai/rai_workspace" \
