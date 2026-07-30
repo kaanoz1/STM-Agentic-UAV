@@ -177,6 +177,10 @@ RUN --mount=type=cache,target=/root/.cache/uv \
       uv sync --locked --all-groups; \
     fi'
 
+# Auto-source ROS 2 setup and local workspace overlay for all interactive bash sessions
+RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc && \
+    echo "source /rai/install/setup.bash" >> ~/.bashrc
+
 COPY docker/entrypoint-desktop.sh /usr/local/bin/entrypoint-desktop.sh
 RUN sed -i 's/\r$//' /usr/local/bin/entrypoint-desktop.sh && \
     chmod +x /usr/local/bin/entrypoint-desktop.sh
