@@ -1,12 +1,12 @@
 
 
 from typing import Any, Literal, Tuple, Type
-
+from cv_bridge import CvBridge
 from pydantic import BaseModel, Field
 from rai.communication.ros2.connectors.ros2_connector import ROS2Connector
 from rai.communication.ros2.messages import ROS2Message
 from rai.messages.artifacts import MultimodalArtifact
-from rai.messages.conversion import preprocess_image
+from rai.messages import preprocess_image
 from rai.tools.ros2.base import BaseROS2Tool
 
 from sensor_msgs.msg import CompressedImage, Image
@@ -17,9 +17,10 @@ class GetROS2ImageToolInput(BaseModel):
 
 
 
+
 class GetROS2ImageTool(BaseROS2Tool):
     connector: ROS2Connector
-    name: str = "get_ros2_image"
+    name: str = "GetROS2ImageTool"
     description: str = "Get an image from a ROS2 topic"
     args_schema: Type[GetROS2ImageToolInput] = GetROS2ImageToolInput # type: ignore
     response_format: Literal["content", "content_and_artifact"] = "content_and_artifact"
@@ -43,7 +44,7 @@ class GetROS2ImageTool(BaseROS2Tool):
             raise ValueError(
                 f"Unsupported message type: {message.metadata['msg_type']}"
             )
-        return "Image received successfully", MultimodalArtifact(
+        return "Image received successfully.", MultimodalArtifact(
             images=[preprocess_image(image)]
         )  # type: ignore
 

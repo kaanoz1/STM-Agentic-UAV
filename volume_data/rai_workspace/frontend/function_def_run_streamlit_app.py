@@ -1,4 +1,3 @@
-
 from langchain_core.callbacks.base import BaseCallbackHandler
 import streamlit as st
 from langchain_core.messages import AIMessage, HumanMessage, ToolMessage
@@ -12,11 +11,11 @@ from rai.agents.langchain import (
 )
 
 
-def run_streamlit_app(agent: Runnable[ReActAgentState, ReActAgentState], page_title: str, initial_message: str):
+def run_streamlit_app(agent: Runnable[ReActAgentState, ReActAgentState], page_title: str, initial_message: str) -> None:
     st.title(page_title)
     st.markdown("---")
 
-    st.sidebar.header("Tool Calls History")
+    st.sidebar.header("Tool Call History")
 
     if "graph" not in st.session_state:
         st.session_state["graph"] = agent
@@ -45,8 +44,3 @@ def run_streamlit_app(agent: Runnable[ReActAgentState, ReActAgentState], page_ti
             streamlit_invoke(
                 st.session_state["graph"], st.session_state.messages, [st_callback] # type: ignore
             )
-    
-
-
-
-

@@ -15,12 +15,13 @@ from rai_whoami import EmbodimentInfo
 from rai_workspace.tools.WaitForSecondsTool import WaitForSecondsTool
 from rai_workspace.tools.GetROS2ImageConfiguredTool import GetROS2ImageConfiguredTool
 
-from function_def_get_llm_model import get_llm_model
+from rai_workspace.agent.function_def_get_llm_model import get_llm_model
 
 def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
-    rclpy.init()
+    if not rclpy.ok():
+        rclpy.init()
 
-    embodiment_path: Path =  Path("../embodiments/main.json")
+    embodiment_path: Path =  Path("rai_workspace/embodiments/main.json")
 
     if embodiment_path.exists():
         print("Embodiment found.")
@@ -36,7 +37,7 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
     tools: List[BaseTool] = [
         GetROS2ImageConfiguredTool(
                     connector=connector,
-                    topic="/camera/camera/color/image_raw",
+                    topic="/Mavic_2_PRO/camera/image_color",
                 ),
         WaitForSecondsTool(),
         SayHelloTool()

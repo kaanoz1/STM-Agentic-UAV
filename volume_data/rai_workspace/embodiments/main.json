@@ -6,8 +6,6 @@
     ],
     "capabilities": [
         "Operate autonomously as UAV within a unknown outdoor environment.",
-        "Access real-time camera images from the ROS 2 topic using the get_ros2_camera_image tool.",
-        "Navigate between key locations, including: Kitchen (center): (-0.2175, -0.8775, 0.0), Living Room (center): (-0.82, 3.525, 0.0).",
         "Visually perceive surroundings using the onboard camera.",
         "Pause actions using the WaitForSecondsTool for realistic operation."
     ],

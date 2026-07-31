@@ -45,8 +45,8 @@ def get_llm_model() -> Union[ChatOpenAI, ChatBedrock, ChatOllama, ChatGoogleGene
         )
 
     elif provider == "google":
-        google_api_key = get_required_env("GOOGLE_API_KEY")
-        model = get_required_env("GOOGLE_MODEL")
+        google_api_key: str = get_required_env("GOOGLE_API_KEY")
+        model: str = get_required_env("GOOGLE_MODEL")
 
         return ChatGoogleGenerativeAI(
             model=model,
@@ -86,6 +86,7 @@ def get_llm_model() -> Union[ChatOpenAI, ChatBedrock, ChatOllama, ChatGoogleGene
             api_key=SecretStr(api_key),
             base_url="https://openrouter.ai/api/v1",
             temperature=0.7,
+            streaming=True
         )
 
     else:
