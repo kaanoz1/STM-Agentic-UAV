@@ -180,3 +180,8 @@ src/rai_interfaces
 
 # Demo assets
 demo_assets/
+
+
+# Env variables
+volume_data/rai_workspace/agent/.env
+!volume_data/rai_workspace/agent/.env.example
