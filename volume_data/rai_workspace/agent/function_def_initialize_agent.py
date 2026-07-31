@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Any, List, cast
 
+from rai_workspace.tools.HelloTool import SayHelloTool
 import rclpy
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
@@ -38,6 +39,7 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
                     topic="/camera/camera/color/image_raw",
                 ),
         WaitForSecondsTool(),
+        SayHelloTool()
             # TODO: Add tools
     ]
 

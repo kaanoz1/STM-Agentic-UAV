@@ -1,3 +1,5 @@
+import time
+
 from langchain_aws import ChatBedrock
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_ollama import ChatOllama
@@ -9,40 +11,72 @@ from langchain_openai import ChatOpenAI
 from langchain_aws import ChatBedrock
 from langchain_community.chat_models import ChatOllama
 from langchain_google_genai import ChatGoogleGenerativeAI
+from datetime import datetime
+import os
 
 load_dotenv()
+
+import os
+from pydantic import SecretStr
+
+import os
+from typing import Union
+from datetime import datetime
+
+def get_required_env(key: str) -> str:
+    value: str | None = os.getenv(key)
+    if not value:
+        timestamp: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        raise ValueError(f"[{timestamp}] [ERROR] Environment variable '{key}' is missing or empty.")
+    return value
+
 
 def get_llm_model() -> Union[ChatOpenAI, ChatBedrock, ChatOllama, ChatGoogleGenerativeAI]:
     provider: str = os.getenv("LLM_PROVIDER", "unknown").lower()
 
     if provider == "openai":
+        api_key: str = get_required_env("OPENAI_API_KEY")
+        model: str = get_required_env("OPENAI_MODEL")
+
         return ChatOpenAI(
-            model=os.getenv("OPENAI_MODEL", "gpt-4o"),
-            api_key=os.getenv("OPENAI_API_KEY"), # type: ignore
+            model=model,
+            api_key=SecretStr(api_key),
             temperature=0.7,
         )
 
     elif provider == "google":
+        google_api_key = get_required_env("GOOGLE_API_KEY")
+        model = get_required_env("GOOGLE_MODEL")
+
         return ChatGoogleGenerativeAI(
-            model=os.getenv("GOOGLE_MODEL", "gemini-1.5-pro"),
-            google_api_key=os.getenv("GOOGLE_API_KEY"),
+            model=model,
+            google_api_key=google_api_key,
             temperature=0.7,
         )
 
     elif provider == "bedrock":
+        model = get_required_env("BEDROCK_MODEL_ID")
+        aws_access_key_id: str = get_required_env("AWS_ACCESS_KEY_ID")
+        aws_secret_access_key: str = get_required_env("AWS_SECRET_ACCESS_KEY")
+        region: str = os.getenv("AWS_REGION_NAME", "us-east-1")
+
         return ChatBedrock(
-            model_id=os.getenv("BEDROCK_MODEL_ID"), # type: ignore
-            region=os.getenv("AWS_REGION_NAME", "us-east-1"),
-            aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
-            aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            model=model,
+            region=region,
+            aws_access_key_id=SecretStr(aws_access_key_id),
+            aws_secret_access_key=SecretStr(aws_secret_access_key),
         )
 
     elif provider == "ollama":
+        model: str = get_required_env("OLLAMA_MODEL")
+        base_url: str = get_required_env("OLLAMA_BASE_URL")
+
         return ChatOllama(
-            model=os.getenv("OLLAMA_MODEL", "llama3"),
-            base_url=os.getenv("OLLAMA_BASE_URL", "http://localhost:11434"),
+            model=model,
+            base_url=base_url,
             temperature=0.7,
         )
 
     else:
-        raise ValueError(f"Unknown LLM Provider: {provider}")
+        timestamp: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        raise ValueError(f"[{timestamp}] [ERROR] Unsupported or unknown LLM Provider: '{provider}'")
