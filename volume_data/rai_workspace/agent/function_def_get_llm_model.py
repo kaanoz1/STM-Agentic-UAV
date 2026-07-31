@@ -77,6 +77,17 @@ def get_llm_model() -> Union[ChatOpenAI, ChatBedrock, ChatOllama, ChatGoogleGene
             temperature=0.7,
         )
 
+    elif provider == "openrouter":
+        api_key: str = get_required_env("OPENROUTER_API_KEY")
+        model: str = get_required_env("OPENROUTER_MODEL")
+
+        return ChatOpenAI(
+            model=model,
+            api_key=SecretStr(api_key),
+            base_url="https://openrouter.ai/api/v1",
+            temperature=0.7,
+        )
+
     else:
         timestamp: str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         raise ValueError(f"[{timestamp}] [ERROR] Unsupported or unknown LLM Provider: '{provider}'")
