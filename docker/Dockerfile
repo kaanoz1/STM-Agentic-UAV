@@ -83,7 +83,9 @@ RUN apt update && apt install -y --no-install-recommends \
     nano \
     dos2unix \
     mesa-utils \
-    epiphany-browser
+    epiphany-browser \
+	htop \
+	btop
 
 
 # noVNC entry page

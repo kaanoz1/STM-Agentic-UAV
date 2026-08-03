@@ -44,13 +44,13 @@ class GetROS2ImageTool(BaseROS2Tool):
             raise ValueError(
                 f"Unsupported message type: {message.metadata['msg_type']}"
             )
-        return "Image received successfully.", MultimodalArtifact(
+        return "Photo captured", MultimodalArtifact(
             images=[preprocess_image(image)]
         )  # type: ignore
 
 
-class GetROS2ImageConfiguredTool(BaseROS2Tool):
-    name: str = "get_ros2_camera_image"
+class GetCameraImage(BaseROS2Tool):
+    name: str = "GetCameraImage"
     description: str = "Get the current image from the camera"
     response_format: Literal["content", "content_and_artifact"] = "content_and_artifact"
 

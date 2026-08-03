@@ -13,7 +13,7 @@ from rai.agents.langchain import (
 from rai.communication.ros2 import ROS2Connector
 from rai_whoami import EmbodimentInfo
 from rai_workspace.tools.WaitForSecondsTool import WaitForSecondsTool
-from rai_workspace.tools.GetROS2ImageConfiguredTool import GetROS2ImageConfiguredTool
+from rai_workspace.tools.GetCameraImage import GetCameraImage
 
 from rai_workspace.agent.function_def_get_llm_model import get_llm_model
 
@@ -34,22 +34,50 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
   
 
     connector = ROS2Connector(executor_type="multi_threaded", use_sim_time=True)
+
+    
     tools: List[BaseTool] = [
-        GetROS2ImageConfiguredTool(
+        GetCameraImage(
                     connector=connector,
                     topic="/Mavic_2_PRO/camera/image_color",
                 ),
         WaitForSecondsTool(),
         SayHelloTool()
-            # TODO: Add tools
+            
     ]
 
     agent: Runnable[Any, Any] = ReActAgent(
-        target_connectors={},  # empty dict, since we're using the agent in direct mode
+        target_connectors={}, 
         llm=get_llm_model(),
         system_prompt=embodiment_info.to_langchain(),
         tools=tools,
     ).agent
-    connector.node.declare_parameter("conversion_ratio", 1.0)
+
+
 
     return cast(Runnable[ReActAgentState, ReActAgentState], agent)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    # connector.node.declare_parameter("conversion_ratio", 1.0)
