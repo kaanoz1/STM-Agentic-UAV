@@ -85,7 +85,8 @@ RUN apt update && apt install -y --no-install-recommends \
     mesa-utils \
     epiphany-browser \
 	htop \
-	btop
+	btop \
+	nvtop
 
 
 # noVNC entry page
