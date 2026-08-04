@@ -98,6 +98,16 @@ TeslaModel3Simple {
   translation -41.5139 4.34169 0.31
   rotation 0 0 1 -0.2618053071795865
 }
+TeslaModel3Simple {
+  translation -24.1 -20 0.31
+  rotation 0 0 1 0.785
+  color 0 0 1
+}
+TeslaModel3Simple {
+  translation -24.3 20.9 0.31
+  rotation 0 0 1 -0.786
+  color 0 1 0
+}
 BigGlassTower {
   translation 33.7 -24.6 0
   rotation 0 0 1 0.524
