@@ -86,7 +86,10 @@ RUN apt update && apt install -y --no-install-recommends \
     epiphany-browser \
 	htop \
 	btop \
-	nvtop
+	nvtop \
+libgl1-mesa-dri \
+  mesa-utils \
+  libglx-mesa0 
 
 
 # noVNC entry page

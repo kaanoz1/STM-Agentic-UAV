@@ -23,7 +23,7 @@ WorldInfo {
     "This demonstration shows a DJI Mavic 2 PRO flying over a rural area by exposing the ROS2 Twist topic."
   ]
   title "ROS2 and DJI Mavic 2 PRO demo"
-  basicTimeStep 8
+  basicTimeStep 16
   defaultDamping Damping {
     linear 0.5
     angular 0.5
@@ -161,7 +161,7 @@ Forest {
     -200 -200
     -200 200
   ]
-  density 0.01
+  density 0.000
   type "cherry tree"
   randomSeed 1
   maxHeight 12
@@ -176,6 +176,7 @@ Mavic2Pro {
   controller "<extern>"
   cameraSlot [
     Camera {
+      optimalThreadCount 4
       width 400
       height 240
       near 0.2

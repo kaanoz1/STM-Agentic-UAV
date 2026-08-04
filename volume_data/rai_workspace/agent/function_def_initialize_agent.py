@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Any, List, cast
 
+from rai_workspace.tools.GetCurrentPositionByGpsTool import GetCurrentPositionByGpsTool
 from rai_workspace.tools.HelloTool import SayHelloTool
 import rclpy
 from langchain_core.runnables import Runnable
@@ -16,6 +17,7 @@ from rai_workspace.tools.WaitForSecondsTool import WaitForSecondsTool
 from rai_workspace.tools.GetCameraImage import GetCameraImage
 
 from rai_workspace.agent.function_def_get_llm_model import get_llm_model
+from rai_workspace.tools.ChangeAltitudeTool import ChangeAltitudeTool
 
 def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
     if not rclpy.ok():
@@ -42,8 +44,9 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
                     topic="/Mavic_2_PRO/camera/image_color",
                 ),
         WaitForSecondsTool(),
-        SayHelloTool()
-            
+        SayHelloTool(),
+        ChangeAltitudeTool(connector=connector),
+        GetCurrentPositionByGpsTool(connector=connector)
     ]
 
     agent: Runnable[Any, Any] = ReActAgent(

@@ -52,6 +52,7 @@ def get_llm_model() -> Union[ChatOpenAI, ChatBedrock, ChatOllama, ChatGoogleGene
             model=model,
             google_api_key=google_api_key,
             temperature=0.7,
+            streaming=True,
         )
 
     elif provider == "bedrock":
