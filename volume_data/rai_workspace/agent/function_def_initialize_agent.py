@@ -2,7 +2,9 @@
 from pathlib import Path
 from typing import Any, List, cast
 
+from rai_workspace.tools.ChangeLookingDirection import ChangeLookingDirection
 from rai_workspace.tools.GetCurrentPositionByGpsTool import GetCurrentPositionByGpsTool
+from rai_workspace.tools.GetLookingDirection import GetLookingDirectionTool
 from rai_workspace.tools.HelloTool import SayHelloTool
 import rclpy
 from langchain_core.runnables import Runnable
@@ -46,7 +48,9 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
         WaitForSecondsTool(),
         SayHelloTool(),
         ChangeAltitudeTool(connector=connector),
-        GetCurrentPositionByGpsTool(connector=connector)
+        GetCurrentPositionByGpsTool(connector=connector),
+        ChangeLookingDirection(connector=connector),
+        GetLookingDirectionTool(connector=connector)
     ]
 
     agent: Runnable[Any, Any] = ReActAgent(

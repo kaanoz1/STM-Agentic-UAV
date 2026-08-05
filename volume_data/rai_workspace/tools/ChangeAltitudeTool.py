@@ -28,8 +28,8 @@ class ChangeAltitudeTool(BaseTool):
         "Returns the final altitude reached. "
         "This tool can be used in order to land the UAV with the target_altitude parameter 1. "
         "Use 10 for default altitude. "
-        "Maximum target_altitude parameter should be 30"
-        "Minimum target_altitude parameter should be 1"
+        "Maximum target_altitude parameter should be 30. "
+        "Minimum target_altitude parameter should be 1. "
     )
 
     args_schema: Type[ChangeAltitudeToolInput] = ChangeAltitudeToolInput # type: ignore
@@ -47,7 +47,7 @@ class ChangeAltitudeTool(BaseTool):
             },
             "angular": {
                 "x": 0,
-                "y": 0,
+                "y": 0,     
                 "z": 0
             }
         }
@@ -58,7 +58,7 @@ class ChangeAltitudeTool(BaseTool):
             msg_type="geometry_msgs/msg/Twist",
         )
 
-    def _run(self, target_altitude: float, timeout_sec: float = 30) -> str:
+    def _run(self, target_altitude: float, timeout_sec: float = 60) -> str:
         current_poisition_tool = GetCurrentPositionByGpsTool(connector=self.connector)
         start_altitude: Point = current_poisition_tool.get_current_point()
 
