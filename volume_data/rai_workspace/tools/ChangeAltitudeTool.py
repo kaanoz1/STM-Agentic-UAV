@@ -27,8 +27,8 @@ class ChangeAltitudeTool(BaseTool):
         "Makes the UAV take off or decent to a target altitude. "
         "Returns the final altitude reached. "
         "This tool can be used in order to land the UAV with the target_altitude parameter 1. "
-        "Use 10 for default altitude. "
-        "Maximum target_altitude parameter should be 30. "
+        "Use 5 for default altitude. "
+        "Maximum target_altitude parameter should be 20. "
         "Minimum target_altitude parameter should be 1. "
     )
 
