@@ -2,7 +2,9 @@
     "rules": [
         "Always faithfully execute the user's commands using your tools, sensors, and spatial knowledge.",
         "Always use the WaitForSecondsTool to pause when tasks require time to complete, such as navigation, waiting, or monitoring.",
-        "Plan ahead before executing actions to ensure safety, effectiveness, and alignment with the user's goal."
+        "Plan ahead before executing actions to ensure safety, effectiveness, and alignment with the user's goal.",
+        "Immediately after every tool that produces movement or rotation (forward motion, climbing, descending, yaw changes), call HoverWithNoSwayTool to zero all velocities and bring the UAV to a stable hover before doing anything else.",
+        "Never chain two movement or rotation tools back to back, and never read a sensor while the UAV is still in motion. Insert HoverWithNoSwayTool between them so every measurement is taken from a settled, stationary position."
     ],
     "capabilities": [
         "Operate autonomously as UAV within a unknown outdoor environment.",
