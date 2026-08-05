@@ -6,6 +6,7 @@ from pydantic import Field
 from rai.communication.ros2.connectors.ros2_connector import ROS2Connector
 from rai.communication.ros2.messages import ROS2Message
 from geometry_msgs.msg import Vector3Stamped, Vector3
+from webots_ros2_msgs.msg import FloatStamped
 
 
 _DIRECTIONS: Tuple[Tuple[str, float], ...] = (
@@ -45,6 +46,7 @@ class GetLookingDirectionTool(BaseTool):
     )
 
     north_vector_topic_name: str = Field(default="/Mavic_2_PRO/compass/north_vector")
+    bearing_topic_name: str = Field(default="/Mavic_2_PRO/compass/bearing")
 
     def get_north_vector(self) -> Vector3:
         message: ROS2Message = self.connector.receive_message(
@@ -55,14 +57,29 @@ class GetLookingDirectionTool(BaseTool):
         return message.payload.vector
 
     def get_bearing(self) -> float:
+        message: ROS2Message = self.connector.receive_message(
+                    self.bearing_topic_name, timeout_sec=3
+                )
+        if not isinstance(message.payload, FloatStamped):
+            raise ValueError(f"Unsupported message type: {type(message.payload)}")
+        return -message.payload.data
+
+    def get_bearing_from_north(self) -> float:
         return _bearing_from_north_vector(self.get_north_vector())
 
     def is_looking_north(self, tolerance_deg: float = 5.0) -> bool:
-        bearing = self.get_bearing()
+        bearing = self.get_bearing_from_north()
         return min(bearing, 360.0 - bearing) <= tolerance_deg
 
+
+    def get_heading(self) -> float:
+        """Heading in degrees clockwise from north. 0=N, 90=E, 180=S, 270=W."""
+        v = self.get_north_vector()
+        return (math.degrees(math.atan2(v.y, v.x))) % 360.0
+
+
     def _run(self, tolerance: float = 5.0) -> str:
-        bearing = self.get_bearing()
+        bearing = self.get_bearing_from_north()
         direction, offset = _closest_direction(bearing)
 
         if abs(offset) <= tolerance:

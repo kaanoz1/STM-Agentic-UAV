@@ -46,7 +46,7 @@ class ChangeLookingDirection(BaseTool):
     yaw_power: float = Field(default=1.0)
     min_yaw_power: float = Field(default=0.15)
     slowdown_angle: float = Field(default=30.0)
-    tolerance: float = Field(default=1.0)
+    tolerance: float = Field(default=0.1)
 
     def _publish_yaw(self, yaw: float) -> None:
         payload = {
@@ -81,14 +81,14 @@ class ChangeLookingDirection(BaseTool):
     ) -> str:
         direction_tool = GetLookingDirectionTool(connector=self.connector)
 
-        start_bearing: float = direction_tool.get_bearing()
+        start_bearing: float = direction_tool.get_bearing_from_north()
         target_bearing: float = (start_bearing + target_looking_difference_angle) % 360.0
 
         timeout_time: float = time.time() + timeout_sec
         current_bearing: float = start_bearing
 
         while time.time() < timeout_time:
-            current_bearing = direction_tool.get_bearing()
+            current_bearing = direction_tool.get_bearing_from_north()
             error: float = _wrap_signed(target_bearing - current_bearing)
 
             if abs(error) <= self.tolerance:
@@ -100,8 +100,8 @@ class ChangeLookingDirection(BaseTool):
                     f"{direction_tool._run()}"
                 )
 
-            self._publish_yaw(self._yaw_command(error))
-            time.sleep(0.1)
+            self._publish_yaw(self._yaw_command(error) / 2)
+            time.sleep(0.2)
 
         self._publish_yaw(0.0)
         remaining = _wrap_signed(target_bearing - current_bearing)

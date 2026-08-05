@@ -2,6 +2,7 @@
 from pathlib import Path
 from typing import Any, List, cast
 
+from rai_workspace.tools.CalculateTheAngleBetweenTheTargetTool import CalculateTheAngleAndDistanceBetweenTheTargetTool
 from rai_workspace.tools.ChangeLookingDirection import ChangeLookingDirection
 from rai_workspace.tools.GetCurrentPositionByGpsTool import GetCurrentPositionByGpsTool
 from rai_workspace.tools.GetLookingDirection import GetLookingDirectionTool
@@ -46,11 +47,12 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
                     topic="/Mavic_2_PRO/camera/image_color",
                 ),
         WaitForSecondsTool(),
-        SayHelloTool(),
+        # SayHelloTool(),
         ChangeAltitudeTool(connector=connector),
         GetCurrentPositionByGpsTool(connector=connector),
         ChangeLookingDirection(connector=connector),
-        GetLookingDirectionTool(connector=connector)
+        GetLookingDirectionTool(connector=connector),
+        CalculateTheAngleAndDistanceBetweenTheTargetTool(connector=connector)
     ]
 
     agent: Runnable[Any, Any] = ReActAgent(
