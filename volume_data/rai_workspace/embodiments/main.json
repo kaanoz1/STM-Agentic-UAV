@@ -13,17 +13,20 @@
         "If the user gives only x and y, keep the current altitude and do not call ChangeAltitudeTool. If the user gives only an altitude, do not move horizontally.",
         "After completing a move towards a target, always call CalculateTheAngleAndDistanceBetweenTheTargetTool again with the same target coordinates to verify arrival. If the returned distance is greater than 1 meter, repeat the full calculate -> rotate -> move cycle with the newly returned values. Consider the target reached only when the measured distance is 1 meter or less.",
         "Never reuse an angle or distance from an earlier measurement. Every cycle must use freshly measured values, because rotation and forward motion both introduce drift.",
-        "Finding an object is a sequence, not a single tool call. To locate an object the user names: (1) call GetCameraImage and look at the frame yourself to judge whether the object is plausibly there, (2) if you believe you see it, call DetectObjectTool with a short lowercase description of it to get its pixel position and angle offset, (3) rotate by that offset with ChangeLookingDirection so the object is centered, (4) hover, then call DetectObjectTool again to confirm the offset is now near zero.",
-        "If DetectObjectTool reports nothing, do not give up after one attempt. Rotate roughly 45 degrees, hover, and search again. Repeat until you have covered a full 360 degree turn. If a full turn finds nothing, climb to a higher altitude for a wider view and repeat the sweep. Report failure to the user only after both a full sweep and an altitude change have failed.",
-        "Trust your own eyes over the detector, and the detector over your own eyes for geometry. Use the camera image to decide what an object is, and use DetectObjectTool to decide where it is in the frame. If the detector returns a match that clearly contradicts what you see in the image, discard it and search again.",
-        "Always hover with HoverWithNoSwayTool immediately before calling DetectObjectTool. A frame captured while the UAV is moving is blurred and its angle offset will be wrong."
+        "If DetectObjectTool reports nothing, do not give up after one attempt. Rotate roughly 45 degrees, hover, and call DetectObjectTool again with the same label. Repeat until you have covered a full 360 degree turn. If a full turn finds nothing, climb to a higher altitude for a wider view and repeat the sweep. Report failure to the user only after both a full sweep and an altitude change have failed.",
+        "GetCameraImage and DetectObjectTool answer two different questions and are never interchangeable. GetCameraImage answers 'what is out there' by giving you the picture to look at with your own eyes. DetectObjectTool answers 'where exactly is this one named thing' by returning pixel coordinates and an angle offset. Deciding what an object is, is your job; measuring where it sits in the frame is the detector's job.",
+        "Call GetCameraImage when you do not yet know what is in front of you: at the start of a search, after arriving somewhere new, after a large rotation, or whenever the user asks what you can see. Describe what you observe before acting on it.",
+        "Call DetectObjectTool only when you already have a specific object in mind and need its position, either because the user named it or because you saw it in a camera image. Never call it to browse or to find out what is around you; it can only look for the one label you give it and will report nothing for everything else.",
+        "Never pass an image to DetectObjectTool. It captures its own fresh frame from the camera. The only input it needs is a short lowercase noun phrase such as 'car', 'cardboard box' or 'windmill'.",
+        "Do not call DetectObjectTool repeatedly with different guesses to discover what is present. If you do not know what is there, call GetCameraImage and look.",
+        "Always hover with HoverWithNoSwayTool immediately before calling either GetCameraImage or DetectObjectTool. A frame captured while the UAV is moving is blurred, and a blurred frame gives both a wrong identification and a wrong angle."
     ],
     "capabilities": [
         "Operate autonomously as UAV within a unknown outdoor environment.",
-        "Visually perceive surroundings using the onboard camera.",
+        "See and describe the surroundings from the onboard camera image, identifying objects, terrain and landmarks by looking at the picture directly.",
+        "Measure the position of one specific named object in the current frame with an open vocabulary detector, obtaining its pixel coordinates and the angle to turn to face it.",
         "Pause actions using the WaitForSecondsTool for realistic operation.",
         "Adjust altitude to improve visual perception, descending for a closer and more detailed view of an object or ascending for a wider search area.",
-        "Detect and locate named objects in the camera view using an open vocabulary detector, which accepts any plain English description and is not limited to a fixed list of categories.",
         "Perform a systematic search sweep by rotating in place and inspecting the camera view at each step."
     ],
     "behaviors": [

@@ -1,6 +1,6 @@
 import math
 import threading
-from typing import Any, Optional, Type
+from typing import Any, Type
 
 import numpy as np
 from cv_bridge import CvBridge
@@ -13,18 +13,30 @@ from sensor_msgs.msg import CameraInfo, CompressedImage, Image
 MODEL_PATH = "/rai/rai_workspace/models/yolov8s-world.pt"
 
 _model = None
+_model_classes: list[str] | None = None
 _model_lock = threading.Lock()
 
 
 def _get_model():
     """Load the YOLO-World model once and reuse it across tool calls."""
     global _model
-    with _model_lock:
-        if _model is None:
-            from ultralytics import YOLOWorld
+    if _model is None:
+        from ultralytics import YOLOWorld
 
-            _model = YOLOWorld(MODEL_PATH)
-        return _model
+        _model = YOLOWorld(MODEL_PATH)
+    return _model
+
+
+def _prepare_model(label: str):
+    """Return the shared model configured for `label`, reusing the last setup."""
+    global _model_classes
+    with _model_lock:
+        model = _get_model()
+        if _model_classes != [label]:
+            model.model.cpu() # type: ignore
+            model.set_classes([label])
+            _model_classes = [label]
+        return model
 
 
 class DetectObjectToolInput(BaseModel):
@@ -67,7 +79,6 @@ class DetectObjectTool(BaseTool):
     timeout_sec: float = Field(default=5.0)
     max_detections: int = Field(default=5)
 
-    # --- sensor access -------------------------------------------------
 
     def _capture_frame(self) -> np.ndarray:
         message: ROS2Message = self.connector.receive_message(
@@ -77,10 +88,16 @@ class DetectObjectTool(BaseTool):
         bridge = CvBridge()
 
         if isinstance(payload, Image):
-            return bridge.imgmsg_to_cv2(payload, desired_encoding="bgr8")
-        if isinstance(payload, CompressedImage):
-            return bridge.compressed_imgmsg_to_cv2(payload, desired_encoding="bgr8")
-        raise ValueError(f"Unsupported message type: {type(payload)}")
+            frame = bridge.imgmsg_to_cv2(payload, desired_encoding="passthrough")
+        elif isinstance(payload, CompressedImage):
+            frame = bridge.compressed_imgmsg_to_cv2(payload, desired_encoding="passthrough")
+        else:
+            raise ValueError(f"Unsupported message type: {type(payload)}")
+
+        # The Webots camera publishes bgra8; drop the alpha channel.
+        if frame.ndim == 3 and frame.shape[2] == 4:
+            frame = frame[:, :, :3]
+        return np.ascontiguousarray(frame)
 
     def _get_intrinsics(self, width: int) -> tuple[float, float]:
         """Returns (fx, cx). Falls back to a 60 degree horizontal FOV estimate."""
@@ -99,20 +116,18 @@ class DetectObjectTool(BaseTool):
         fov = math.radians(60.0)
         return (width / 2.0) / math.tan(fov / 2.0), width / 2.0
 
-    # --- detection -----------------------------------------------------
 
     def detect(self, label: str, confidence: float = 0.15) -> list[dict[str, Any]]:
         frame = self._capture_frame()
         height, width = frame.shape[:2]
         fx, cx = self._get_intrinsics(width)
 
-        model = _get_model()
-        model.set_classes([label])
+        model = _prepare_model(label)
         results = model.predict(frame, conf=confidence, verbose=False)
 
         detections: list[dict[str, Any]] = []
         for result in results:
-            for box in result.boxes:
+            for box in result.boxes: # type: ignore
                 x1, y1, x2, y2 = (float(v) for v in box.xyxy[0].tolist())
                 center_x = (x1 + x2) / 2.0
                 center_y = (y1 + y2) / 2.0
@@ -139,7 +154,6 @@ class DetectObjectTool(BaseTool):
         detections.sort(key=lambda d: d["confidence"], reverse=True)
         return detections[: self.max_detections]
 
-    # --- tool interface ------------------------------------------------
 
     def _run(self, label: str, confidence: float = 0.15) -> str:
         try:

@@ -194,9 +194,7 @@ RUN mkdir -p /root/.config/Ultralytics && \
 
 RUN --mount=type=cache,target=/root/.cache/uv \
     /bin/bash -c '. .venv/bin/activate && \
-      uv pip install ultralytics && \
-      uv pip install setuptools && \
-      uv pip install clip-anytorch'
+      uv pip install ultralytics clip-anytorch "setuptools<70"'
 
 RUN /bin/bash -c '. .venv/bin/activate && cd /tmp && python -c "\
 from ultralytics import YOLOWorld; \
