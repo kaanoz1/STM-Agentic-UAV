@@ -7,6 +7,7 @@ from rai_workspace.tools.ChangeLookingDirection import ChangeLookingDirection
 from rai_workspace.tools.GetCurrentPositionByGpsTool import GetCurrentPositionByGpsTool
 from rai_workspace.tools.GetLookingDirection import GetLookingDirectionTool
 from rai_workspace.tools.HelloTool import SayHelloTool
+from rai_workspace.tools.HoverWithNoSwayTool import HoverWithNoSwayTool
 import rclpy
 from langchain_core.runnables import Runnable
 from langchain_core.tools import BaseTool
@@ -21,6 +22,8 @@ from rai_workspace.tools.GetCameraImage import GetCameraImage
 
 from rai_workspace.agent.function_def_get_llm_model import get_llm_model
 from rai_workspace.tools.ChangeAltitudeTool import ChangeAltitudeTool
+from rai_workspace.tools.MovingForwardTool import MovingForwardTool
+from rai_workspace.tools.DetectObjectTool import DetectObjectTool
 
 def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
     if not rclpy.ok():
@@ -42,17 +45,20 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
 
     
     tools: List[BaseTool] = [
+        CalculateTheAngleAndDistanceBetweenTheTargetTool(connector=connector),
+        ChangeAltitudeTool(connector=connector),
+        ChangeLookingDirection(connector=connector),
+        DetectObjectTool(connector=connector),
         GetCameraImage(
                     connector=connector,
                     topic="/Mavic_2_PRO/camera/image_color",
                 ),
-        WaitForSecondsTool(),
-        # SayHelloTool(),
-        ChangeAltitudeTool(connector=connector),
         GetCurrentPositionByGpsTool(connector=connector),
-        ChangeLookingDirection(connector=connector),
         GetLookingDirectionTool(connector=connector),
-        CalculateTheAngleAndDistanceBetweenTheTargetTool(connector=connector)
+        # SayHelloTool(),
+        HoverWithNoSwayTool(connector=connector),
+        MovingForwardTool(connector=connector),
+        # WaitForSecondsTool(),
     ]
 
     agent: Runnable[Any, Any] = ReActAgent(

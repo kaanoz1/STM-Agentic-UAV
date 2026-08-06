@@ -36,8 +36,14 @@ class ChangeLookingDirection(BaseTool):
         "Rotates the UAV in place (yaw) by a given number of degrees relative to "
         "its current heading. Positive values turn clockwise (north -> east -> south), "
         "negative values turn counter-clockwise. "
-        "Use 180 to make the UAV face the opposite direction, 90 to turn right, "
-        "-90 to turn left. Returns the final heading reached."
+        "Any angle is accepted, not just multiples of 90. Fractional values such as "
+        "31.4 or -7.8 are valid and are executed exactly as given. When rotating to "
+        "face a target, always pass the precise angle returned by "
+        "CalculateTheAngleAndDistanceBetweenTheTargetTool without rounding it to the "
+        "nearest 90, 45 or whole degree, because rounding introduces a heading error "
+        "that grows with distance and will cause the UAV to miss the target. "
+        "180 faces the opposite direction, 90 turns right, -90 turns left. "
+        "Returns the final heading reached."
     )
 
     args_schema: Type[ChangeLookingDirectionInput] = ChangeLookingDirectionInput  # type: ignore

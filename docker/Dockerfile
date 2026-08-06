@@ -185,6 +185,26 @@ RUN --mount=type=cache,target=/root/.cache/uv \
       uv sync --locked --all-groups; \
     fi'
 
+# Object detection stack (YOLO-World via ultralytics)
+ENV YOLO_AUTOINSTALL=false
+
+RUN mkdir -p /root/.config/Ultralytics && \
+    echo '{"sync": false, "api_key": "", "datasets_dir": "/tmp", "weights_dir": "/rai/rai_workspace/models", "runs_dir": "/tmp/runs"}' \
+      > /root/.config/Ultralytics/settings.json
+
+RUN --mount=type=cache,target=/root/.cache/uv \
+    /bin/bash -c '. .venv/bin/activate && \
+      uv pip install ultralytics && \
+      uv pip install setuptools && \
+      uv pip install clip-anytorch'
+
+RUN /bin/bash -c '. .venv/bin/activate && cd /tmp && python -c "\
+from ultralytics import YOLOWorld; \
+m = YOLOWorld(\"yolov8s-world.pt\"); \
+m.set_classes([\"box\"]); \
+print(\"YOLO-World ready\")"'
+
+
 # Auto-source ROS 2 setup and local workspace overlay for all interactive bash sessions
 RUN echo "source /opt/ros/${ROS_DISTRO}/setup.bash" >> ~/.bashrc && \
     echo "source /rai/install/setup.bash" >> ~/.bashrc
