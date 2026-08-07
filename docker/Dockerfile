@@ -189,7 +189,7 @@ RUN --mount=type=cache,target=/root/.cache/uv \
 ENV YOLO_AUTOINSTALL=false
 
 RUN mkdir -p /root/.config/Ultralytics && \
-    echo '{"sync": false, "api_key": "", "datasets_dir": "/tmp", "weights_dir": "/rai/rai_workspace/models", "runs_dir": "/tmp/runs"}' \
+    echo '{"sync": false, "api_key": "", "datasets_dir": "/tmp", "weights_dir": "/rai/models", "runs_dir": "/tmp/runs"}' \
       > /root/.config/Ultralytics/settings.json
 
 RUN --mount=type=cache,target=/root/.cache/uv \

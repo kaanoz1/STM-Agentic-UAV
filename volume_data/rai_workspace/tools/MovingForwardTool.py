@@ -38,13 +38,13 @@ class MovingForwardTool(BaseTool):
         "line. The UAV does not turn, strafe or change altitude while moving, so the "
         "heading set by ChangeLookingDirection is preserved. "
         "If this tool was called in order to reach a target position, you MUST verify "
-        "the result afterwards: call "
-        "CalculateTheAngleAndDistanceBetweenTheTargetTool again with the same target_x "
-        "and target_y you used before. If the returned distance is greater than 1 meter, "
-        "the target has not been reached yet: rotate to the newly returned angle with "
-        "ChangeLookingDirection and call MovingForwardTool again with the newly returned "
-        "distance. Repeat this calculate -> rotate -> move cycle until the distance drops "
-        "to 1 meter or below. Never assume the target was reached without measuring."
+        "the result afterwards: call CalculateTheAngleAndDistanceBetweenTheTargetTool "
+        "again with the same target_x and target_y you used before. If the returned "
+        "distance is 1 meter or less, the target has been reached -- stop here and do "
+        "not call this tool or ChangeLookingDirection again for this target. Only if "
+        "the returned distance is still greater than 1 meter, rotate to the newly "
+        "returned angle with ChangeLookingDirection and call MovingForwardTool again "
+        "with the newly returned distance."
     )
 
     args_schema: Type[MovingForwardToolInput] = MovingForwardToolInput  # type: ignore
@@ -52,8 +52,8 @@ class MovingForwardTool(BaseTool):
     cmd_vel_topic_name: str = Field(default="/cmd_vel")
     pitch_power: float = Field(default=1.0)
     min_pitch_power: float = Field(default=0.15)
-    slowdown_distance: float = Field(default=1.5)
-    tolerance: float = Field(default=1)
+    slowdown_distance: float = Field(default=3)
+    tolerance: float = Field(default=0.1)
     forward_sign: float = Field(
         default=1.0,
         description="Set to -1.0 if a positive linear.x makes the UAV fly backward.",
@@ -123,7 +123,7 @@ class MovingForwardTool(BaseTool):
                     f"CalculateTheAngleAndDistanceBetweenTheTargetTool now to verify."
                 )
 
-            self._publish_pitch(self._pitch_command(error))
+            self._publish_pitch(self._pitch_command(error) / 2)
             time.sleep(0.1)
 
         self._publish_pitch(0.0)

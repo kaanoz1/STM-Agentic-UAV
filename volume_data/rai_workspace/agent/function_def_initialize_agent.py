@@ -15,6 +15,7 @@ from rai.agents.langchain import (
     ReActAgent,
     ReActAgentState,
 )
+from rai_workspace.tools.GetObjectPositionTool import GetObjectPositionTool
 from rai.communication.ros2 import ROS2Connector
 from rai_whoami import EmbodimentInfo
 from rai_workspace.tools.WaitForSecondsTool import WaitForSecondsTool
@@ -55,6 +56,7 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
                 ),
         GetCurrentPositionByGpsTool(connector=connector),
         GetLookingDirectionTool(connector=connector),
+        GetObjectPositionTool(connector=connector),
         # SayHelloTool(),
         HoverWithNoSwayTool(connector=connector),
         MovingForwardTool(connector=connector),

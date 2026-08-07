@@ -41,6 +41,7 @@ def run_streamlit_app(agent: Runnable[ReActAgentState, ReActAgentState], page_ti
         st.chat_message("user").write(prompt)
         with st.chat_message("assistant"):
             st_callback: BaseCallbackHandler = get_streamlit_cb(st.container())
+            
             streamlit_invoke(
                 st.session_state["graph"], st.session_state.messages, [st_callback] # type: ignore
             )

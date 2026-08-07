@@ -3,6 +3,7 @@ import threading
 from typing import Any, Type
 
 import numpy as np
+import torch
 from cv_bridge import CvBridge
 from langchain_core.tools import BaseTool
 from pydantic import BaseModel, Field
@@ -27,15 +28,33 @@ def _get_model():
     return _model
 
 
-def _prepare_model(label: str):
-    """Return the shared model configured for `label`, reusing the last setup."""
+_SYNONYMS = {
+    "person": ["person", "human", "man", "woman", "pedestrian"],
+    "car": ["car", "automobile", "vehicle", "sedan"],
+}
+
+def _expand_label(label: str) -> list[str]:
+    """Return the label plus any known synonyms, deduplicated, label-first."""
+    key = label.strip().lower()
+    extras = _SYNONYMS.get(key, [])
+    seen = []
+    for candidate in [label, *extras]:
+        if candidate not in seen:
+            seen.append(candidate)
+    return seen
+
+
+def _prepare_model(labels: list[str]):
+    """Return the shared model configured for `labels`, reusing the last setup."""
     global _model_classes
     with _model_lock:
         model = _get_model()
-        if _model_classes != [label]:
-            model.model.cpu() # type: ignore
-            model.set_classes([label])
-            _model_classes = [label]
+        if _model_classes != labels:
+            device = "cuda" if torch.cuda.is_available() else "cpu"
+            model.model.cpu()  # type: ignore
+            model.set_classes(labels)
+            model.model.to(device)  # type: ignore
+            _model_classes = labels
         return model
 
 
@@ -45,6 +64,9 @@ class DetectObjectToolInput(BaseModel):
             "What to look for, in plain English lowercase, for example "
             "'cardboard box', 'blue car', 'manhole cover', 'windmill'. "
             "Use a short noun phrase describing the object, not a sentence."
+            "Internally this also checks a few common synonyms of your label (for example "
+            "'person' also checks 'human' and 'pedestrian'), so you do not need to retry "
+            "with different wordings yourself if the first attempt finds nothing."
         ),
     )
     confidence: float = Field(
@@ -59,19 +81,22 @@ class DetectObjectTool(BaseTool):
     name: str = "DetectObjectTool"
     description: str = (
         "Looks for a named object in the UAV's current camera view and returns where "
-        "it appears in the image. Give it a short description of the object such as "
-        "'cardboard box' or 'blue car'. It captures a fresh camera frame by itself, so "
-        "you do not pass an image to it. "
+        "it appears in the image. "
+        "A plain 'find X' or 'is there an X' request only needs GetCameraImage -- look "
+        "at the image and describe what you see in words. Call this tool only when the "
+        "task requires a precise position: facing the object, computing its "
+        "coordinates, or moving towards it. "
+        "Give it a short description of the object such as 'cardboard box' or 'blue car'. "
+        "It captures a fresh camera frame by itself, so you do not pass an image to it. "
         "Returns, for each match: the pixel coordinates of the object's center, how "
         "large it appears, and the horizontal angle offset in degrees between the UAV's "
         "current heading and the object. A negative offset means the object is to the "
-        "left, positive means it is to the right. "
-        "That offset can be passed directly to ChangeLookingDirection to turn and face "
-        "the object. If nothing is found, rotate or change altitude and try again. "
-        "The UAV must be hovering and stable when this is called, otherwise the frame "
-        "will be blurred and the angle will be wrong."
+        "left, positive means it is to the right. That offset can be passed directly to "
+        "ChangeLookingDirection to turn and face the object. "
+        "Call this at most once per hover position. If it finds a match, stop -- do not "
+        "call it again unless you are about to navigate towards the object and need a "
+        "fresh measurement after moving."
     )
-
     args_schema: Type[DetectObjectToolInput] = DetectObjectToolInput  # type: ignore
 
     image_topic_name: str = Field(default="/Mavic_2_PRO/camera/image_color")
@@ -99,53 +124,57 @@ class DetectObjectTool(BaseTool):
             frame = frame[:, :, :3]
         return np.ascontiguousarray(frame)
 
-    def _get_intrinsics(self, width: int) -> tuple[float, float]:
-        """Returns (fx, cx). Falls back to a 60 degree horizontal FOV estimate."""
+    def _get_intrinsics(self, width: int, height: int) -> tuple[float, float, float, float]:
+        """Returns (fx, fy, cx, cy). Falls back to a 60 degree horizontal FOV estimate."""
         try:
             message: ROS2Message = self.connector.receive_message(
                 self.camera_info_topic_name, timeout_sec=self.timeout_sec
             )
             if isinstance(message.payload, CameraInfo):
                 fx = float(message.payload.k[0])
+                fy = float(message.payload.k[4])
                 cx = float(message.payload.k[2])
-                if fx > 0.0:
-                    return fx, cx
+                cy = float(message.payload.k[5])
+                if fx > 0.0 and fy > 0.0:
+                    return fx, fy, cx, cy
         except Exception:
             pass
-
+        
         fov = math.radians(60.0)
-        return (width / 2.0) / math.tan(fov / 2.0), width / 2.0
-
+        fx_fallback = (width / 2.0) / math.tan(fov / 2.0)
+        return fx_fallback, fx_fallback, width / 2.0, height / 2.0    
 
     def detect(self, label: str, confidence: float = 0.15) -> list[dict[str, Any]]:
+        labels = _expand_label(label)
         frame = self._capture_frame()
         height, width = frame.shape[:2]
-        fx, cx = self._get_intrinsics(width)
+        fx, fy, cx, cy = self._get_intrinsics(width, height)
 
-        model = _prepare_model(label)
+        model = _prepare_model(labels)
         results = model.predict(frame, conf=confidence, verbose=False)
 
         detections: list[dict[str, Any]] = []
         for result in results:
-            for box in result.boxes: # type: ignore
+            for box in result.boxes:  # type: ignore
                 x1, y1, x2, y2 = (float(v) for v in box.xyxy[0].tolist())
                 center_x = (x1 + x2) / 2.0
                 center_y = (y1 + y2) / 2.0
+                class_id = int(box.cls[0])
+                matched_label = labels[class_id] if class_id < len(labels) else label
 
                 detections.append(
                     {
                         "center_x": center_x,
                         "center_y": center_y,
-                        "x1": x1,
-                        "y1": y1,
-                        "x2": x2,
-                        "y2": y2,
+                        "x1": x1, "y1": y1, "x2": x2, "y2": y2,
                         "width": x2 - x1,
                         "height": y2 - y1,
                         "area_ratio": ((x2 - x1) * (y2 - y1)) / (width * height),
                         "confidence": float(box.conf[0]),
-                        # Positive => object is to the right of the current heading.
+                        "matched_label": matched_label,
                         "angle_offset": math.degrees(math.atan2(center_x - cx, fx)),
+                        "fy": fy,
+                        "cy": cy,
                         "image_width": width,
                         "image_height": height,
                     }
@@ -153,7 +182,6 @@ class DetectObjectTool(BaseTool):
 
         detections.sort(key=lambda d: d["confidence"], reverse=True)
         return detections[: self.max_detections]
-
 
     def _run(self, label: str, confidence: float = 0.15) -> str:
         try:
