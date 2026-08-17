@@ -23,5 +23,5 @@ docker run -it \
   -e ROS_DOMAIN_ID="${ROS_DOMAIN_ID:-0}" \
   -e ROS_DISTRO=humble \
   -e MESA_D3D12_DEFAULT_ADAPTER_NAME=NVIDIA \
-  -v "$HOME/projects/rai/volume_data/rai_workspace:/rai/rai_workspace" \
+  -v "$HOME/projects/STM-Agentic-UAV/volume_data/rai_workspace:/rai/rai_workspace" \
   rai:humble
