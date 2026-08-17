@@ -11,7 +11,7 @@ from rai.communication.ros2.connectors.ros2_connector import ROS2Connector
 from rai.communication.ros2.messages import ROS2Message
 from sensor_msgs.msg import CameraInfo, CompressedImage, Image
 
-MODEL_PATH = "/rai/rai_workspace/models/yolov8s-world.pt"
+MODEL_PATH = "/rai/rai_workspace/models/yolov8x-worldv2.pt"
 
 _model = None
 _model_classes: list[str] | None = None

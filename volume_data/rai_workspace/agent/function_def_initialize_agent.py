@@ -25,6 +25,7 @@ from rai_workspace.agent.function_def_get_llm_model import get_llm_model
 from rai_workspace.tools.ChangeAltitudeTool import ChangeAltitudeTool
 from rai_workspace.tools.MovingForwardTool import MovingForwardTool
 from rai_workspace.tools.DetectObjectTool import DetectObjectTool
+from rai_workspace.tools.CheckObstacleClearanceTool import CheckObstacleClearanceTool
 
 def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
     if not rclpy.ok():
@@ -49,6 +50,7 @@ def initialize_agent() -> Runnable[ReActAgentState, ReActAgentState]:
         CalculateTheAngleAndDistanceBetweenTheTargetTool(connector=connector),
         ChangeAltitudeTool(connector=connector),
         ChangeLookingDirection(connector=connector),
+        CheckObstacleClearanceTool(connector=connector),
         DetectObjectTool(connector=connector),
         GetCameraImage(
                     connector=connector,

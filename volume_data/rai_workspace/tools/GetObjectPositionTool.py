@@ -20,7 +20,7 @@ class GetObjectPositionToolInput(BaseModel):
         ),
     )
     confidence: float = Field(
-        default=0.15,
+        default=0.1,
         description="Minimum detection confidence between 0 and 1.",
     )
 
