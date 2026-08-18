@@ -15,7 +15,7 @@ def run_streamlit_app(agent: Runnable[ReActAgentState, ReActAgentState], page_ti
     st.title(page_title)
     st.markdown("---")
 
-    st.sidebar.header("Tool Call History")
+    st.sidebar.header("Yetenek Çağırma Geçmişi")
 
     if "graph" not in st.session_state:
         st.session_state["graph"] = agent

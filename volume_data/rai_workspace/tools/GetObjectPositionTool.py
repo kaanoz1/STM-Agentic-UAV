@@ -41,6 +41,9 @@ class GetObjectPositionTool(BaseTool):
         "This only works for objects on the ground; it will refuse to estimate a "
         "position for something above the horizon line, such as a bird or a rooftop "
         "object. The UAV must be hovering and stable when this is called."
+        "Returning the coordinates is often the complete answer. Do not automatically "
+        "begin navigating towards them -- only do so if the user asked you to travel "
+        "to the object, not merely to locate it."
     )
 
     args_schema: Type[GetObjectPositionToolInput] = GetObjectPositionToolInput  # type: ignore
