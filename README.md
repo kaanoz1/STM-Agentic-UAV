@@ -12,7 +12,7 @@ Kullanılan bileşenler ve ilgili dokümantasyonlar:
 
 ## Akış: 
 
-![Sistem Akışı](./docs/System-Flow.png)
+![Sistem Akışı](./docs/SistemAkışı.png)
 
 Yukarıdaki şemada "Bağlam" olarak gösterilen bileşen, RAI içerisinde LangChain ve LangGraph işlemleri ile gerçekleştirilir.
 
@@ -86,7 +86,17 @@ cd /rai/rai_workspace/frontend
     6.1. [run_simulation.sh](./volume_data/rai_workspace/simulation/run_simulation.sh): Simülasyon dünyasını başlatan script. \
     6.2. [run_teleop.sh](./volume_data/rai_workspace/simulation/run_teleop.sh) Manuel drone kontrolcüsünü başlatan dosya. (Bu scripti çalıştırmadan önce simülasyonu çalıştırın.) Ardından belirtilen tuşlar ile drone'u kontrol edebilirsiniz. İngilizce klavye kullandığınızdan emin olun.
     
+## Simülasyon Dünyasını Değiştirme
 
+Simülasyon Dünyasının tanım dosyası: [mavic_world.wbt](./volume_data/rai_workspace/simulation/worlds/mavic_world.wbt)
+
+Bir objeyi silmek istediğinizde bu dosyadan ilgili objenin tanımını silin.
+
+Bir obje eklemek istediğinizde ise Simülasyonu açın. Sol üstteki + butonuna tıklayın ve eklemek istediğiniz objeyi seçin.
+
+![Simülasyon Obje Ekleme](docs/SimülasyonObjeEkleme.jpg)
+
+Objeyi istediğiniz yere yerleştirin. Simülasyon ekranındaki sol menüden objenin özelliklerini [mavic_world.wbt](./volume_data/rai_workspace/simulation/worlds/mavic_world.wbt) dosyasına ekleyin ve simülasyonu yeniden başlatın.
 
 
 
