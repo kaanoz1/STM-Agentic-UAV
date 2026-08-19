@@ -28,7 +28,7 @@ Kamera: 400x240, bgra8 \
 LiDAR:  360 derece, 1D, 0.15-100 m menzil
 
 ### Python
-Python: 3.10.12
+Python: 3.10.12 \
 Package Manager: uv 0.12.5
 
 ### AI Kütüphane Versiyonları
