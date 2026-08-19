@@ -64,7 +64,7 @@ cd /rai/rai_workspace/frontend
 
 ## Projeyi Dosya Yapısı ve Dosyaların İçeriği
 
-**Önemli!!!:** Projeye eklediğiniz dosyaların kalıcı olması için **container dışında** `volume_data/rai_workspace` klasörünün altında, **container içinde** `/rai/rai_workspace` klasörünün altında olmalıdır. Volume tanımı için [run scriptini](./run.linux.sh) inceleyebilirsiniz.
+**Önemli!!!:** Projeye eklediğiniz dosyaların kalıcı olması için dosyaların **container dışında** `volume_data/rai_workspace` klasörünün altında, **container içinde** `/rai/rai_workspace` klasörünün altında olmalıdır. Volume tanımı için [run scriptini](./run.linux.sh) inceleyebilirsiniz.
 
 1. [rai_workspace/agent](./volume_data/rai_workspace/agent/):
 
