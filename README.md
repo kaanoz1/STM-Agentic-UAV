@@ -29,9 +29,9 @@ Projeyi uygun şekilde çalıştırmak için **NVIDIA ekran kartına sahip** Doc
 
 **run.linux.sh** ile container'i oluşturun. Container çalıştıktan sonra bir süre bekleyin ve **Enter**'a basın. Artık komut yazabilirsiniz.
 
-Container'ın NVIDIA ekran kartınıza bağlandığını test etmek için `nvidia-smi` komutunu kontrol edin ve `glxinfo | grep OpenGL` komutu ile ekran kartınızın tanındığını doğrulayın. Aksi takdirde simülasyon yeterli hızda çalışamayabilir. Projeyi çalıştırdığınız her farklı bilgisayar için bir defa kontrol etmeniz yeterlidir. Ekran kartının tanınması ile ilgili resmi dokümantasyon: [https://cyberbotics.com/doc/guide/verifying-your-graphics-driver-installation](https://cyberbotics.com/doc/guide/verifying-your-graphics-driver-installation)
+Container'ın NVIDIA ekran kartınıza bağlandığını test etmek için `nvidia-smi` komutunu kontrol edin ve `glxinfo | grep OpenGL` komutu ile ekran kartınızın tanındığını doğrulayın. Aksi takdirde simülasyonda takılmalar olabilir. Projeyi çalıştırdığınız her farklı bilgisayar için bir defa kontrol etmeniz yeterlidir. Ekran kartının tanınması ile ilgili resmi dokümantasyon: [https://cyberbotics.com/doc/guide/verifying-your-graphics-driver-installation](https://cyberbotics.com/doc/guide/verifying-your-graphics-driver-installation)
 
-Kullanılacak LLM'in bilgilerini sisteme sağlamak için:
+Kullanılacak LLM'in bilgilerini sisteme girmek için:
 
 ```bash
 cd /rai/rai_workspace/agents
@@ -76,10 +76,10 @@ cd /rai/rai_workspace/frontend
     2.1. [main.json](./volume_data/rai_workspace/embodiments/main.json): Embodiment içeriği.
 3. [rai_workspace/frontend](./volume_data/rai_workspace/frontend/):
 
-    3.1. [function_def_run_streamlit_app.py](./volume_data/rai_workspace/frontend/function_def_run_streamlit_app.py): Kullanıcı girdisinin alındığı frontend uygulamayı içeren dosya. **Bu dosyayı çalıştırmayın.** \
-    3.2. [app.py](./volume_data/rai_workspace/frontend/app.py): Frontend uygulamasını çalıştıran dosya. **Bu dosyayı çalıştırmayın.** Uygulamayı çalıştırmak için -> `./run_frontend.sh` \
+    3.1. [function_def_run_streamlit_app.py](./volume_data/rai_workspace/frontend/function_def_run_streamlit_app.py): Kullanıcı girdisinin alındığı frontend uygulamayı içeren dosya. **Bu dosyayı salt çalıştırmayın.** \
+    3.2. [app.py](./volume_data/rai_workspace/frontend/app.py): Frontend uygulamasını çalıştıran dosya. **Bu dosyayı salt çalıştırmayın.** Uygulamayı çalıştırmak için -> `./run_frontend.sh` \
     3.3. [run_frontend.sh](./volume_data/rai_workspace/frontend/run_frontend.sh): Frontend uygulamasını çalıştıran script.
-4. [rai_workspace/tools](./volume_data/rai_workspace/tools/): Tool'ın (yeteneklerin) tanımları.
+4. [rai_workspace/tools](./volume_data/rai_workspace/tools/): Tool'ın (yeteneklerin) tanımları. **Not:** Yeni bir tool eklemek istediğinizde BaseTool sınıfından inherit edin/türetin.
 5. [rai_workspace/models](./volume_data/rai_workspace/models/): Yapay zeka modellerinin (YOLO, Llama) ağırlık dosyaları. 
 6. [rai_workspace/simulation](./volume_data/rai_workspace/simulation/): Simülasyon dünyasının dosyalarını ve konfigürasyonlarını içerir.
 
