@@ -37,7 +37,7 @@ Kullanılacak LLM'in bilgilerini sisteme sağlamak için:
 cd /rai/rai_workspace/agents
 cp .env.example .env
 
-# Herhangi bir text editor kullanarak .env dosyasına gerekli bilgileri girin.
+# .env dosyasına gerekli bilgileri girin.
 vim .env
 ```
 
