@@ -114,7 +114,7 @@ class MovingForwardTool(BaseTool):
             if abs(error) <= self.tolerance:
                 self._publish_pitch(0.0)
                 stay_tool = HoverWithNoSwayTool(connector=self.connector)
-                stay_tool._run()
+    
                 return (
                     f"Completed. Travelled {travelled:.2f} m of the requested "
                     f"{distance:.2f} m (off by {error:+.2f} m, lateral drift "

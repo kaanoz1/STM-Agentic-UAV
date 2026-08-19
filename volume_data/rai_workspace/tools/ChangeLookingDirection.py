@@ -103,7 +103,6 @@ class ChangeLookingDirection(BaseTool):
                     f"Completed. Heading: {current_bearing:.1f} degrees from north "
                     f"(target {target_bearing:.1f}, started at {start_bearing:.1f}, "
                     f"rotated {_wrap_signed(current_bearing - start_bearing):+.1f} degrees). "
-                    f"{direction_tool._run()}"
                 )
 
             self._publish_yaw(self._yaw_command(error) / 2)
@@ -116,5 +115,4 @@ class ChangeLookingDirection(BaseTool):
             f"Heading: {current_bearing:.1f} degrees from north, "
             f"target was {target_bearing:.1f} degrees "
             f"({abs(remaining):.1f} degrees short). "
-            f"{direction_tool._run()}"
         )
